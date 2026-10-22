@@ -1,0 +1,6 @@
+{
+  "name": "CREDIULEP — Tienda Virtual de Cursos y Aula Inmediata",
+  "description": "Plataforma de comercio electrónico educativo CREDIULEP para comprar cursos desde donde estés con catálogo categorizado, pasarela de pagos integrada Efipay y acceso inmediato a las lecciones.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
