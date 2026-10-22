@@ -24,6 +24,7 @@ import { EfipayCheckoutModal } from './components/EfipayCheckoutModal';
 import { CourseDetailModal } from './components/CourseDetailModal';
 import { ClassroomPlayer } from './components/ClassroomPlayer';
 import { CartSlideOver } from './components/CartSlideOver';
+import { GitHubDeployModal } from './components/GitHubDeployModal';
 
 export default function App() {
   // Active view: 'storefront' or 'classroom'
@@ -77,6 +78,7 @@ export default function App() {
   const [detailCourse, setDetailCourse] = useState<Course | null>(null);
   const [efipayItems, setEfipayItems] = useState<Course[]>([]);
   const [isEfipayOpen, setIsEfipayOpen] = useState<boolean>(false);
+  const [isGitHubDeployOpen, setIsGitHubDeployOpen] = useState<boolean>(false);
 
   // Classroom state
   const [classroomCourseId, setClassroomCourseId] = useState<string>('crs-finanzas-credito');
@@ -849,6 +851,13 @@ export default function App() {
             >
               Aula Virtual
             </button>
+            <button
+              type="button"
+              onClick={() => setIsGitHubDeployOpen(true)}
+              className="font-semibold text-slate-900 hover:text-amber-700 transition-colors cursor-pointer"
+            >
+              Despliegue en GitHub Pages
+            </button>
             <span className="inline-flex items-center gap-1 text-slate-600">
               <ShieldCheck className="w-3.5 h-3.5" />
               <span>Pagos protegidos por Efipay</span>
@@ -888,6 +897,12 @@ export default function App() {
         currency={currency}
         onPaymentSuccess={handlePaymentSuccess}
         onOpenCourseImmediately={(courseId) => handleOpenClassroom(courseId)}
+      />
+
+      {/* GitHub Pages Deployment Assistant Modal */}
+      <GitHubDeployModal
+        isOpen={isGitHubDeployOpen}
+        onClose={() => setIsGitHubDeployOpen(false)}
       />
     </div>
   );
