@@ -315,7 +315,7 @@ Día del mes para aporte DCA: Día ______.`,
     },
     outcomes: [
       'Diseñar arquitecturas frontend modulares en React 19 y TypeScript con estado predecible y latencia cero.',
-      'Integrar pasarelas de pago como Efipay mediante Checkout Transparente, PSE y validación criptográfica de Webhooks.',
+      'Integrar pasarelas de pago mediante Checkout Transparente, PSE y validación criptográfica de Webhooks.',
       'Implementar idempotencia en pagos para evitar cobros duplicados ante caídas de red móvil.',
       'Desplegar contenedores auto-escalables con monitoreo de errores en tiempo real.',
     ],
@@ -364,27 +364,27 @@ Día del mes para aporte DCA: Día ______.`,
           {
             id: 'les-dev-2',
             number: '02',
-            title: 'Integración de API Efipay: Checkout, PSE, Nequi y Webhooks HMAC',
+            title: 'Integración de API de Pagos: Checkout, PSE, Billeteras y Webhooks HMAC',
             duration: '35:15',
             durationMinutes: 35,
             summary:
-              'Implementación completa del ciclo de vida de una transacción en Efipay: creación de orden, tokenización, redirección bancaria y confirmación vía Webhook firmado.',
+              'Implementación completa del ciclo de vida de una transacción digital: creación de orden, tokenización, redirección bancaria y confirmación vía Webhook firmado.',
             keyTakeaways: [
               'Generación de llave de idempotencia única por intento de cobro.',
               'Verificación de firma HMAC-SHA256 en el endpoint de Webhook antes de liberar el curso.',
               'Liberación instantánea del contenido educativo tras confirmación de estado APPROVED.',
             ],
-            practicalFormulaOrCode: `// Verificación de firma de Webhook Efipay en Node/Express
+            practicalFormulaOrCode: `// Verificación de firma de Webhook en Node/Express
 import crypto from 'crypto';
 
-function verifyEfipayWebhook(payload: string, signature: string, secret: string): boolean {
+function verifyPaymentWebhook(payload: string, signature: string, secret: string): boolean {
   const expected = crypto.createHmac('sha256', secret).update(payload).digest('hex');
   return crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expected));
 }`,
-            resourceTitle: 'Checklist_Seguridad_Efipay_API.txt',
-            resourceContent: `CHECKLIST DE PRODUCCIÓN PARA INTEGRACIÓN EFIPAY — CREDIULEP
+            resourceTitle: 'Checklist_Seguridad_Pagos_API.txt',
+            resourceContent: `CHECKLIST DE PRODUCCIÓN PARA INTEGRACIÓN DE PAGOS — CREDIULEP
 [x] Credenciales API almacenadas en variables de entorno seguras.
-[x] Verificación HMAC-SHA256 activa en ruta POST /api/webhooks/efipay.
+[x] Verificación HMAC-SHA256 activa en ruta POST /api/webhooks/payments.
 [x] Idempotencia por reference_id en base de datos para evitar doble activación.`,
             quiz: {
               question:
@@ -452,20 +452,19 @@ async function syncLessonProgress(courseId: string, lessonId: string) {
               'Configuración de pipelines CI/CD, trazabilidad de órdenes y tableros de conciliación financiera.',
             keyTakeaways: [
               'Logs estructurados en JSON con correlationId por transacción.',
-              'Pruebas automatizadas de extremo a extremo para el flujo Carrito -> Efipay -> Aula Virtual.',
+              'Pruebas automatizadas de extremo a extremo para el flujo Carrito -> Pago -> Aula Virtual.',
               'Estrategia de despliegue Blue-Green sin tiempo de inactividad.',
             ],
             practicalFormulaOrCode: `// Log estructurado de conciliación transaccional
 logger.info({
   event: 'COURSE_UNLOCKED_INSTANTLY',
-  gateway: 'EFIPAY',
-  txReference: 'EFIPAY-894210',
+  txReference: 'ORD-894210',
   latencyMs: 142,
   studentAccess: 'GRANTED'
 });`,
             resourceTitle: 'Protocolo_Conciliacion_Transaccional.txt',
             resourceContent: `AUDITORÍA Y CONCILIACIÓN DIARIA — CREDIULEP
-1. Cruzar webhooks aprobados de Efipay contra matrículas activadas.
+1. Cruzar webhooks aprobados contra matrículas activadas.
 2. Verificar latencia de activación (< 2 segundos tras confirmación).
 3. Emitir comprobante electrónico automático al estudiante.`,
             quiz: {
@@ -511,7 +510,7 @@ logger.info({
       bio: 'Especialista en optimización de tasa de conversión (CRO) y medios de pago digitales. Ha asesorado a más de 180 comercios en su expansión regional.',
     },
     outcomes: [
-      'Aumentar la tasa de aprobación y conversión en el checkout ofreciendo PSE, Nequi, Tarjetas y Links de pago Efipay.',
+      'Aumentar la tasa de aprobación y conversión en el checkout ofreciendo PSE, Nequi, Tarjetas y Links de pago.',
       'Estructurar catálogos categorizados que guían al comprador desde el descubrimiento hasta el pago en menos de 3 clics.',
       'Dominar las métricas unitarias del comercio electrónico: CAC, LTV, AOV y ROAS marginal.',
       'Implementar secuencias de recuperación de carritos y activación post-compra inmediata.',
@@ -573,13 +572,13 @@ Impacto de mejora del +20% en cada palanca:
             ],
             practicalFormulaOrCode: `// Cálculo de Unit Economics para Curso Digital
 Precio del Curso:             $149,000 COP
-Costo Pasarela + Impuestos:    -$8,900 COP
+Costo Transaccional:           -$8,900 COP
 Margen de Contribución (94%): $140,100 COP
 CAC Objetivo Máximo (1/3):     $46,700 COP`,
             resourceTitle: 'Calculadora_Unit_Economics_Tienda.txt',
             resourceContent: `PLANTILLA DE UNIT ECONOMICS PARA TIENDA VIRTUAL
 Precio de Venta Promedio (AOV): ______________
-Comisión Pasarela de Pagos: __________________
+Comisión de Transacción: _____________________
 Margen Bruto por Orden: ______________________
 Costo de Adquisición de Cliente (CAC): _______`,
             quiz: {
@@ -597,7 +596,7 @@ Costo de Adquisición de Cliente (CAC): _______`,
           {
             id: 'les-eco-3',
             number: '03',
-            title: 'Links de pago Efipay, QR y comercio conversacional por WhatsApp',
+            title: 'Links de pago directos, QR y comercio conversacional por WhatsApp',
             duration: '26:50',
             durationMinutes: 27,
             summary:
@@ -607,15 +606,15 @@ Costo de Adquisición de Cliente (CAC): _______`,
               'Estructura de seguimiento en 3 toques para carritos pendientes sin ser invasivo.',
               'Activación automática de cuenta estudiantil al confirmar pago por QR o PSE.',
             ],
-            practicalFormulaOrCode: `// Flujo de Conversión Híbrida CREDIULEP + Efipay
+            practicalFormulaOrCode: `// Flujo de Conversión Híbrida CREDIULEP
 1. Selección en Catálogo Web o Consulta Móvil
-2. Orden Generada con Referencia Única Efipay
+2. Orden Generada con Referencia Única
 3. Pago vía PSE / Nequi / Tarjeta / QR en < 45 segundos
 4. Redirección Automática al Reproductor de Lecciones`,
             resourceTitle: 'Plantillas_Cierre_Ventas_Digitales.txt',
             resourceContent: `PROTOCOLO DE RECUPERACIÓN Y CIERRE RÁPIDO — CREDIULEP
 Mensaje 1 (Minuto 15): Resumen del programa y enlace directo a lección gratuita.
-Mensaje 2 (Hora 4): Resolución de dudas frecuentes sobre medios de pago Efipay.
+Mensaje 2 (Hora 4): Resolución de dudas frecuentes sobre medios de pago.
 Mensaje 3 (Hora 24): Confirmación de cupo y acceso inmediato garantizado.`,
             quiz: {
               question: '¿Cuál es el principal beneficio de ofrecer acceso inmediato a las lecciones tras el pago?',
@@ -689,7 +688,7 @@ Mensaje 3 (Hora 24): Confirmación de cupo y acceso inmediato garantizado.`,
     DATE_TRUNC('month', fecha_pago) AS mes,
     categoria,
     SUM(monto_cop) AS ingresos
-  FROM transacciones_efipay
+  FROM transacciones_pagos
   WHERE estado = 'APPROVED'
   GROUP BY 1, 2
 )
@@ -759,7 +758,7 @@ Paso 3: Agrupar y dividir por el tamaño inicial de la cohorte (Mes 0).`,
               'Diseño de alertas operativas basadas en umbrales estadísticos.',
             ],
             practicalFormulaOrCode: `// Estructura de KPI Ejecutivo de Alta Precisión
-Métrica:   Tasa de Aprobación Pasarela Efipay
+Métrica:   Tasa de Aprobación Transaccional
 Valor:     96.4% (+2.1 pts vs. trimestre anterior)
 Muestra:   n = 14,820 transacciones verificadas`,
             resourceTitle: 'Guia_Diseno_Tableros_Ejecutivos.txt',
@@ -871,7 +870,7 @@ Muestra:   n = 14,820 transacciones verificadas`,
               'Mostrar el desglose exacto de la orden en todo momento durante el pago.',
             ],
             practicalFormulaOrCode: `// Jerarquía de Estados Accesibles
-Estado Error:   Ícono Alerta + Texto descriptivo ("Ingresa los 10 dígitos de tu celular Nequi")
+Estado Error:   Ícono Alerta + Texto descriptivo ("Ingresa los 10 dígitos de tu celular")
 Estado Éxito:   Ícono Check + Referencia verificable + Acción inmediata ("Ir a la Lección 1")`,
             resourceTitle: 'Auditoria_Accesibilidad_WCAG_Checkout.txt',
             resourceContent: `AUDITORÍA DE ACCESIBILIDAD EN FORMULARIOS DE PAGO
@@ -1074,57 +1073,6 @@ Indicador de Éxito Medible: _________________________`,
         ],
       },
     ],
-  },
-];
-
-export interface Testimonial {
-  id: string;
-  studentName: string;
-  role: string;
-  organization: string;
-  location: string;
-  coursePurchased: string;
-  paymentMethodUsed: string;
-  quote: string;
-  outcomeMetric: string;
-}
-
-export const TESTIMONIALS: Testimonial[] = [
-  {
-    id: 'test-1',
-    studentName: 'Natalia Gómez Arango',
-    role: 'Gerente Financiera Regional',
-    organization: 'Grupo Logístico del Pacífico',
-    location: 'Compró desde Cali, Colombia (en ruta al aeropuerto)',
-    coursePurchased: 'Arquitectura Financiera, Gestión de Crédito e Inversión Global',
-    paymentMethodUsed: 'PSE vía Efipay',
-    quote:
-      'Antes dependía de hojas de cálculo desordenadas y pagaba tasas altas en créditos rotativos. Compré el curso desde mi celular por PSE con Efipay mientras esperaba un vuelo y en el mismo minuto ya estaba viendo la primera lección. Apliqué la matriz de renegociación y reestructuré el flujo de caja en tres semanas.',
-    outcomeMetric: '-6.4 pts en costo de deuda anual en 21 días',
-  },
-  {
-    id: 'test-2',
-    studentName: 'Carlos Andrés Pineda',
-    role: 'Desarrollador Full-Stack Senior',
-    organization: 'Nexo Digital Studio',
-    location: 'Compró desde Medellín, Colombia',
-    coursePurchased: 'Ingeniería Web Full-Stack con TypeScript, React y Pasarelas de Pago',
-    paymentMethodUsed: 'Nequi vía Efipay',
-    quote:
-      'Necesitábamos integrar pagos con Efipay y validación de webhooks para un cliente de comercio electrónico. Pagué con Nequi en 20 segundos, descargué las guías de arquitectura del módulo 1 de inmediato y desplegamos la pasarela en producción sin un solo cobro duplicado.',
-    outcomeMetric: '99.98% de transacciones conciliadas en el primer mes',
-  },
-  {
-    id: 'test-3',
-    studentName: 'Lucía Fernández Soler',
-    role: 'Fundadora & Directora Comercial',
-    organization: 'Botánica & Co. E-Commerce',
-    location: 'Compró desde Madrid, España / Operación en Bogotá',
-    coursePurchased: 'Estrategia de E-Commerce, Conversión y Ventas Sin Fronteras',
-    paymentMethodUsed: 'Tarjeta Internacional vía Efipay',
-    quote:
-      'Dirijo mi marca entre España y Colombia. Poder pagar con tarjeta en CREDIULEP y acceder al aula virtual al instante desde mi tablet en el tren fue impecable. Rediseñamos nuestro checkout siguiendo las lecciones del curso y redujimos el abandono de carrito drásticamente.',
-    outcomeMetric: '+38% en tasa de conversión de checkout en 60 días',
   },
 ];
 

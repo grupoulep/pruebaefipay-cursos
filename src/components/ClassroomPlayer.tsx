@@ -203,7 +203,7 @@ export const ClassroomPlayer: React.FC<ClassroomPlayerProps> = ({
               onClick={() => onBuyCourseNow(course)}
               className="px-4 py-2.5 bg-amber-600 hover:bg-amber-500 text-white text-xs font-semibold rounded-lg transition-colors whitespace-nowrap shrink-0 cursor-pointer"
             >
-              Desbloquear Curso Completo con Efipay (
+              Pagar y Desbloquear Curso (
               {formatPrice(course.priceCOP, course.priceUSD, currency)})
             </button>
           )}
@@ -595,7 +595,7 @@ export const ClassroomPlayer: React.FC<ClassroomPlayerProps> = ({
               )}
             </>
           ) : (
-            /* Locked Lesson State with Instant Efipay Unlock CTA */
+            /* Locked Lesson State */
             <div className="bg-white border border-slate-200 rounded-xl p-8 sm:p-12 text-center space-y-5">
               <div className="w-12 h-12 rounded-full bg-amber-50 border border-amber-200 text-amber-700 flex items-center justify-center mx-auto">
                 <Lock className="w-5 h-5" />
@@ -606,10 +606,8 @@ export const ClassroomPlayer: React.FC<ClassroomPlayerProps> = ({
                 </p>
                 <h2 className="text-2xl font-bold text-slate-900">{activeLesson.title}</h2>
                 <p className="text-sm text-slate-600 leading-relaxed">
-                  Compra este curso desde donde estés a través de la pasarela integrada{' '}
-                  <strong className="text-slate-900">Efipay</strong> (PSE, Tarjeta, Nequi, Daviplata
-                  o QR) y desbloquea todas las {course.lessonsCount} lecciones en este mismo
-                  instante.
+                  Adquiere este curso desde donde estés y desbloquea todas las{' '}
+                  {course.lessonsCount} lecciones al instante.
                 </p>
               </div>
               <div className="pt-2">
@@ -618,8 +616,7 @@ export const ClassroomPlayer: React.FC<ClassroomPlayerProps> = ({
                   className="px-6 py-3 bg-amber-600 hover:bg-amber-500 text-white text-sm font-semibold rounded-lg transition-colors inline-flex items-center gap-2 whitespace-nowrap shrink-0 cursor-pointer"
                 >
                   <span>
-                    Desbloquear Ahora con Efipay (
-                    {formatPrice(course.priceCOP, course.priceUSD, currency)})
+                    Pagar Ahora ({formatPrice(course.priceCOP, course.priceUSD, currency)})
                   </span>
                 </button>
               </div>

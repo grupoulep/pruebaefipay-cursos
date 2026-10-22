@@ -37,7 +37,7 @@ Este proyecto ya incluye toda la configuración necesaria en el código para ser
 Si prefieres publicar directamente hacia la rama `gh-pages` desde tu computador:
 
 ```bash
-npm install
+npm install --legacy-peer-deps
 npm run deploy
 ```
 
