@@ -72,11 +72,13 @@ export const ClassroomPlayer: React.FC<ClassroomPlayerProps> = ({
 
   // Load saved notes when switching lessons
   useEffect(() => {
-    const saved = localStorage.getItem(`crediulep_notes_${activeLesson.id}`);
-    setStudentNotes(
-      saved ||
-        `Apuntes personales para "${activeLesson.title}":\n- Aplicar concepto clave en mi proyecto esta semana.\n`
-    );
+    if (typeof localStorage !== 'undefined') {
+      const saved = localStorage.getItem(`crediulep_notes_${activeLesson.id}`);
+      setStudentNotes(
+        saved ||
+          `Apuntes personales para "${activeLesson.title}":\n- Aplicar concepto clave en mi proyecto esta semana.\n`
+      );
+    }
     setSelectedQuizOption(null);
     setQuizSubmitted(false);
     setIsPlaying(false);
@@ -106,7 +108,9 @@ export const ClassroomPlayer: React.FC<ClassroomPlayerProps> = ({
   };
 
   const handleSaveNotes = () => {
-    localStorage.setItem(`crediulep_notes_${activeLesson.id}`, studentNotes);
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem(`crediulep_notes_${activeLesson.id}`, studentNotes);
+    }
     setNotesSavedFeedback(true);
     setTimeout(() => setNotesSavedFeedback(false), 1800);
   };
@@ -158,42 +162,40 @@ export const ClassroomPlayer: React.FC<ClassroomPlayerProps> = ({
       : null;
 
   return (
-    <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-      {/* Top Classroom Navigation Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-200">
+    <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 animate-fade-in">
+      {/* Top Classroom Bar with Soft Edges and Purple Theme */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 bg-white rounded-3xl border border-purple-100 shadow-sm">
         <div className="space-y-1">
           <button
             onClick={onBackToCatalog}
-            className="text-xs font-semibold text-slate-600 hover:text-slate-900 inline-flex items-center gap-1.5 transition-colors cursor-pointer"
+            className="text-xs font-bold text-purple-700 hover:text-purple-900 inline-flex items-center gap-1.5 transition-colors cursor-pointer"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             <span>Volver al catálogo de cursos</span>
           </button>
-          <h1 className="text-xl sm:text-2xl font-bold text-slate-900">{course.title}</h1>
-          <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500">
-            <span>Aula Virtual CREDIULEP</span>
-            <span aria-hidden="true">·</span>
+          <h1 className="text-xl sm:text-2xl font-bold text-purple-950">{course.title}</h1>
+          <div className="flex flex-wrap items-center gap-2 text-xs text-purple-900/60">
             <span>Docente: {course.instructor.name}</span>
             <span aria-hidden="true">·</span>
-            <span>
+            <span className="font-semibold text-purple-700">
               {isPurchased
-                ? 'Matrícula Activa (Acceso Completo)'
+                ? 'Matrícula Activa'
                 : 'Modo Vista Previa (Lección 1 Libre)'}
             </span>
           </div>
         </div>
 
-        {/* Course Progress / Purchase Status */}
+        {/* Course Progress */}
         <div className="flex items-center gap-4 shrink-0">
           {isPurchased ? (
-            <div className="bg-white border border-slate-200 rounded-lg px-4 py-2.5 text-right">
-              <div className="text-xs text-slate-500 font-mono-tabular">
-                Progreso del curso: {completedInCourseCount}/{totalCourseLessons} lecciones (
+            <div className="bg-purple-50/70 border border-purple-100 rounded-2xl px-5 py-3 text-right">
+              <div className="text-xs text-purple-950 font-bold font-mono-tabular">
+                Progreso: {completedInCourseCount}/{totalCourseLessons} lecciones (
                 {completionPercentage}%)
               </div>
-              <div className="w-44 h-1.5 bg-slate-100 rounded-full overflow-hidden mt-1.5">
+              <div className="w-44 h-2 bg-purple-200/60 rounded-full overflow-hidden mt-1.5">
                 <div
-                  className="h-full bg-amber-600 transition-transform duration-200 origin-left"
+                  className="h-full bg-gradient-to-r from-purple-600 to-indigo-600 rounded-full transition-transform duration-300 origin-left"
                   style={{ transform: `scaleX(${completionPercentage / 100})` }}
                 />
               </div>
@@ -201,10 +203,9 @@ export const ClassroomPlayer: React.FC<ClassroomPlayerProps> = ({
           ) : (
             <button
               onClick={() => onBuyCourseNow(course)}
-              className="px-4 py-2.5 bg-amber-600 hover:bg-amber-500 text-white text-xs font-semibold rounded-lg transition-colors whitespace-nowrap shrink-0 cursor-pointer"
+              className="px-5 py-3 bg-purple-700 hover:bg-purple-600 text-white text-xs font-semibold rounded-2xl shadow-md shadow-purple-700/20 transition-all cursor-pointer active:scale-95 whitespace-nowrap shrink-0"
             >
-              Pagar y Desbloquear Curso (
-              {formatPrice(course.priceCOP, course.priceUSD, currency)})
+              Pagar y Desbloquear Curso ({formatPrice(course.priceCOP, course.priceUSD, currency)})
             </button>
           )}
         </div>
@@ -212,26 +213,25 @@ export const ClassroomPlayer: React.FC<ClassroomPlayerProps> = ({
 
       {/* Main 2-Column Classroom Split */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        {/* Left 8 Columns: Interactive Video/Slide Player + Lesson Content Tabs */}
+        {/* Left 8 Columns: Player & Lesson Panels */}
         <div className="lg:col-span-8 space-y-6">
           {isLessonUnlocked ? (
             <>
-              {/* Interactive Lesson Visual Player */}
-              <div className="rounded-xl overflow-hidden bg-[#0F172A] border border-slate-800 text-white shadow-sm">
-                {/* Visual Slide / Interactive Canvas */}
-                <div className="relative aspect-[16/9] w-full bg-[#131924] p-6 sm:p-10 flex flex-col justify-between overflow-hidden">
-                  {/* Background subtle course artwork */}
+              {/* Soft Rounded Player Container */}
+              <div className="rounded-3xl overflow-hidden bg-[#1A0B2E] border border-purple-900/60 text-white shadow-xl shadow-purple-950/20">
+                {/* Visual Slide */}
+                <div className="relative aspect-[16/9] w-full bg-gradient-to-br from-[#1E1138] via-[#2A164E] to-[#120721] p-6 sm:p-10 flex flex-col justify-between overflow-hidden">
                   <div className="absolute inset-0 opacity-20 pointer-events-none">
                     <CourseArtwork theme={course.visualTheme} className="w-full h-full" />
                   </div>
 
                   {/* Top Slide Kicker */}
-                  <div className="relative z-10 flex items-center justify-between text-xs text-slate-300 border-b border-slate-800/80 pb-3">
-                    <span className="font-mono-tabular">
+                  <div className="relative z-10 flex items-center justify-between text-xs text-purple-200 border-b border-purple-800/60 pb-3">
+                    <span className="font-mono-tabular font-semibold">
                       LECCIÓN {activeLesson.number} · {course.category.toUpperCase()}
                     </span>
-                    <span className="font-mono-tabular text-amber-400">
-                      CREDIULEP STREAMING HD
+                    <span className="font-mono-tabular text-purple-300">
+                      CREDIULEP STREAMING
                     </span>
                   </div>
 
@@ -240,29 +240,29 @@ export const ClassroomPlayer: React.FC<ClassroomPlayerProps> = ({
                     <h2 className="text-xl sm:text-2xl font-bold text-white leading-snug text-balance">
                       {activeLesson.title}
                     </h2>
-                    <p className="text-sm text-slate-300 leading-relaxed">
+                    <p className="text-sm text-purple-200/90 leading-relaxed">
                       {activeLesson.summary}
                     </p>
-                    <div className="p-3.5 rounded-lg bg-slate-950/90 border border-slate-800 font-mono-tabular text-xs text-amber-300 overflow-x-auto whitespace-pre">
+                    <div className="p-4 rounded-2xl bg-[#120721]/90 border border-purple-800/80 font-mono-tabular text-xs text-purple-200 overflow-x-auto whitespace-pre">
                       {activeLesson.practicalFormulaOrCode}
                     </div>
                   </div>
 
                   {/* Bottom Interactive Overlay */}
-                  <div className="relative z-10 flex items-center justify-between text-xs text-slate-400 pt-2">
+                  <div className="relative z-10 flex items-center justify-between text-xs text-purple-300/80 pt-2">
                     <span>Docente: {course.instructor.name}</span>
                     <span className="font-mono-tabular">
-                      {isPlaying ? 'Reproduciendo en vivo...' : 'En pausa · Listo para reproducir'}
+                      {isPlaying ? 'Reproduciendo...' : 'Pausado'}
                     </span>
                   </div>
                 </div>
 
-                {/* Player Control Bar */}
-                <div className="px-4 sm:px-6 py-3.5 bg-slate-950 border-t border-slate-800 flex flex-wrap items-center justify-between gap-4">
+                {/* Player Control Bar with Soft Rounded Controls */}
+                <div className="px-5 sm:px-7 py-4 bg-[#120721] border-t border-purple-900/70 flex flex-wrap items-center justify-between gap-4">
                   <div className="flex items-center gap-3">
                     <button
                       onClick={() => setIsPlaying(!isPlaying)}
-                      className="px-3.5 py-2 bg-amber-600 hover:bg-amber-500 text-white text-xs font-semibold rounded-lg transition-colors inline-flex items-center gap-1.5 whitespace-nowrap shrink-0 cursor-pointer"
+                      className="px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold rounded-xl transition-all inline-flex items-center gap-2 shadow-xs cursor-pointer active:scale-95"
                     >
                       {isPlaying ? (
                         <>
@@ -272,12 +272,12 @@ export const ClassroomPlayer: React.FC<ClassroomPlayerProps> = ({
                       ) : (
                         <>
                           <Play className="w-3.5 h-3.5" />
-                          <span>Reproducir lección</span>
+                          <span>Reproducir</span>
                         </>
                       )}
                     </button>
 
-                    <span className="text-xs font-mono-tabular text-slate-300">
+                    <span className="text-xs font-mono-tabular text-purple-200">
                       {formatTime(progressSeconds)} / {activeLesson.duration}
                     </span>
                   </div>
@@ -291,21 +291,21 @@ export const ClassroomPlayer: React.FC<ClassroomPlayerProps> = ({
                       max={activeLesson.durationMinutes * 60}
                       value={progressSeconds}
                       onChange={(e) => setProgressSeconds(Number(e.target.value))}
-                      className="w-full accent-amber-500 cursor-pointer"
+                      className="w-full accent-purple-500 cursor-pointer"
                     />
                   </div>
 
                   {/* Speed & Complete Controls */}
                   <div className="flex items-center gap-2">
-                    <div className="flex items-center gap-1 bg-slate-900 p-1 rounded-lg border border-slate-800">
+                    <div className="flex items-center gap-1 bg-purple-950/70 p-1 rounded-xl border border-purple-800/60">
                       {[1, 1.25, 1.5, 2].map((spd) => (
                         <button
                           key={spd}
                           onClick={() => setPlaybackSpeed(spd)}
-                          className={`px-2 py-1 text-xs font-mono-tabular rounded transition-colors cursor-pointer ${
+                          className={`px-2 py-1 text-xs font-mono-tabular rounded-lg transition-colors cursor-pointer ${
                             playbackSpeed === spd
-                              ? 'bg-amber-600 text-white font-semibold'
-                              : 'text-slate-400 hover:text-white'
+                              ? 'bg-purple-600 text-white font-semibold'
+                              : 'text-purple-300 hover:text-white'
                           }`}
                         >
                           {spd}x
@@ -315,30 +315,28 @@ export const ClassroomPlayer: React.FC<ClassroomPlayerProps> = ({
 
                     <button
                       onClick={() => onToggleCompleteLesson(activeLesson.id)}
-                      className={`px-3 py-2 text-xs font-semibold rounded-lg transition-colors inline-flex items-center gap-1.5 whitespace-nowrap shrink-0 cursor-pointer ${
+                      className={`px-3.5 py-2 text-xs font-semibold rounded-xl transition-all inline-flex items-center gap-1.5 whitespace-nowrap shrink-0 cursor-pointer active:scale-95 ${
                         isCurrentLessonCompleted
-                          ? 'bg-emerald-900/60 text-emerald-300 border border-emerald-700/50'
-                          : 'bg-slate-800 hover:bg-slate-700 text-slate-200'
+                          ? 'bg-purple-800/80 text-purple-200 border border-purple-600'
+                          : 'bg-purple-950/90 hover:bg-purple-900 text-purple-200'
                       }`}
                     >
-                      <CheckCircle2 className="w-3.5 h-3.5" />
-                      <span>
-                        {isCurrentLessonCompleted ? 'Completada' : 'Marcar completada'}
-                      </span>
+                      <CheckCircle2 className="w-3.5 h-3.5 text-purple-400" />
+                      <span>{isCurrentLessonCompleted ? 'Completada' : 'Marcar completada'}</span>
                     </button>
                   </div>
                 </div>
               </div>
 
-              {/* Lesson Navigation & Action Strip */}
-              <div className="flex flex-wrap items-center justify-between gap-4 bg-white p-4 rounded-xl border border-slate-200">
-                <div className="flex items-center gap-1 p-1 bg-slate-100 rounded-lg">
+              {/* Lesson Tabs Strip */}
+              <div className="flex flex-wrap items-center justify-between gap-4 bg-white p-3.5 rounded-3xl border border-purple-100 shadow-xs">
+                <div className="flex items-center gap-1.5 p-1 bg-purple-50/70 rounded-2xl">
                   <button
                     onClick={() => setActiveTab('resumen')}
-                    className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-colors inline-flex items-center gap-1.5 whitespace-nowrap shrink-0 cursor-pointer ${
+                    className={`px-3.5 py-2 text-xs font-semibold rounded-xl transition-all inline-flex items-center gap-1.5 whitespace-nowrap shrink-0 cursor-pointer ${
                       activeTab === 'resumen'
-                        ? 'bg-white text-slate-900 shadow-xs'
-                        : 'text-slate-600 hover:text-slate-900'
+                        ? 'bg-purple-700 text-white shadow-xs'
+                        : 'text-purple-900/70 hover:text-purple-950'
                     }`}
                   >
                     <BookOpen className="w-3.5 h-3.5" />
@@ -346,10 +344,10 @@ export const ClassroomPlayer: React.FC<ClassroomPlayerProps> = ({
                   </button>
                   <button
                     onClick={() => setActiveTab('evaluacion')}
-                    className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-colors inline-flex items-center gap-1.5 whitespace-nowrap shrink-0 cursor-pointer ${
+                    className={`px-3.5 py-2 text-xs font-semibold rounded-xl transition-all inline-flex items-center gap-1.5 whitespace-nowrap shrink-0 cursor-pointer ${
                       activeTab === 'evaluacion'
-                        ? 'bg-white text-slate-900 shadow-xs'
-                        : 'text-slate-600 hover:text-slate-900'
+                        ? 'bg-purple-700 text-white shadow-xs'
+                        : 'text-purple-900/70 hover:text-purple-950'
                     }`}
                   >
                     <HelpCircle className="w-3.5 h-3.5" />
@@ -357,10 +355,10 @@ export const ClassroomPlayer: React.FC<ClassroomPlayerProps> = ({
                   </button>
                   <button
                     onClick={() => setActiveTab('apuntes')}
-                    className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-colors inline-flex items-center gap-1.5 whitespace-nowrap shrink-0 cursor-pointer ${
+                    className={`px-3.5 py-2 text-xs font-semibold rounded-xl transition-all inline-flex items-center gap-1.5 whitespace-nowrap shrink-0 cursor-pointer ${
                       activeTab === 'apuntes'
-                        ? 'bg-white text-slate-900 shadow-xs'
-                        : 'text-slate-600 hover:text-slate-900'
+                        ? 'bg-purple-700 text-white shadow-xs'
+                        : 'text-purple-900/70 hover:text-purple-950'
                     }`}
                   >
                     <FileText className="w-3.5 h-3.5" />
@@ -368,10 +366,10 @@ export const ClassroomPlayer: React.FC<ClassroomPlayerProps> = ({
                   </button>
                   <button
                     onClick={() => setActiveTab('certificado')}
-                    className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-colors inline-flex items-center gap-1.5 whitespace-nowrap shrink-0 cursor-pointer ${
+                    className={`px-3.5 py-2 text-xs font-semibold rounded-xl transition-all inline-flex items-center gap-1.5 whitespace-nowrap shrink-0 cursor-pointer ${
                       activeTab === 'certificado'
-                        ? 'bg-white text-slate-900 shadow-xs'
-                        : 'text-slate-600 hover:text-slate-900'
+                        ? 'bg-purple-700 text-white shadow-xs'
+                        : 'text-purple-900/70 hover:text-purple-950'
                     }`}
                   >
                     <Award className="w-3.5 h-3.5" />
@@ -382,7 +380,7 @@ export const ClassroomPlayer: React.FC<ClassroomPlayerProps> = ({
                 {nextLesson && (
                   <button
                     onClick={() => setActiveLessonId(nextLesson.id)}
-                    className="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold rounded-lg transition-colors inline-flex items-center gap-1.5 whitespace-nowrap shrink-0 cursor-pointer"
+                    className="px-4 py-2 bg-purple-900 hover:bg-purple-800 text-white text-xs font-semibold rounded-xl transition-all inline-flex items-center gap-1.5 whitespace-nowrap shrink-0 shadow-xs cursor-pointer active:scale-95"
                   >
                     <span>Siguiente: Lección {nextLesson.number}</span>
                     <ChevronRight className="w-3.5 h-3.5" />
@@ -390,26 +388,26 @@ export const ClassroomPlayer: React.FC<ClassroomPlayerProps> = ({
                 )}
               </div>
 
-              {/* Tab Content Panels */}
+              {/* Tab Content Panels with Soft Rounded Corners */}
               {activeTab === 'resumen' && (
-                <div className="bg-white border border-slate-200 rounded-xl p-6 space-y-6">
+                <div className="bg-white border border-purple-100 rounded-3xl p-7 space-y-6 shadow-xs">
                   <div className="space-y-2">
-                    <h3 className="text-lg font-bold text-slate-900">
-                      Conceptos clave de la Lección {activeLesson.number}
+                    <h3 className="text-lg font-bold text-purple-950">
+                      Conceptos de la Lección {activeLesson.number}
                     </h3>
-                    <p className="text-sm text-slate-600 leading-relaxed max-w-[68ch]">
+                    <p className="text-sm text-purple-900/70 leading-relaxed max-w-[68ch]">
                       {activeLesson.summary}
                     </p>
                   </div>
 
                   <div className="space-y-2.5">
-                    <h4 className="text-xs font-semibold text-slate-500 uppercase">
+                    <h4 className="text-xs font-bold text-purple-950 uppercase tracking-wider">
                       Puntos de aplicación inmediata
                     </h4>
-                    <ul className="space-y-2 text-sm text-slate-700">
+                    <ul className="space-y-2.5 text-sm text-purple-900/80">
                       {activeLesson.keyTakeaways.map((point, idx) => (
                         <li key={idx} className="flex items-start gap-2.5">
-                          <span className="font-mono-tabular font-semibold text-amber-700">
+                          <span className="font-mono-tabular font-bold text-purple-700">
                             0{idx + 1}.
                           </span>
                           <span>{point}</span>
@@ -419,18 +417,18 @@ export const ClassroomPlayer: React.FC<ClassroomPlayerProps> = ({
                   </div>
 
                   {/* Downloadable Resource Box */}
-                  <div className="p-4 rounded-lg bg-slate-50 border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div className="p-5 rounded-2xl bg-purple-50/60 border border-purple-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div>
-                      <p className="text-xs text-slate-500">Material descargable para estudiar sin conexión</p>
-                      <p className="text-sm font-semibold text-slate-900 font-mono-tabular mt-0.5">
+                      <p className="text-xs text-purple-900/60">Material descargable</p>
+                      <p className="text-sm font-bold text-purple-950 font-mono-tabular mt-0.5">
                         {activeLesson.resourceTitle}
                       </p>
                     </div>
                     <button
                       onClick={() => handleDownloadResource(activeLesson)}
-                      className="px-4 py-2 bg-white border border-slate-300 hover:border-slate-900 text-slate-900 text-xs font-semibold rounded-lg transition-colors inline-flex items-center gap-2 whitespace-nowrap shrink-0 cursor-pointer"
+                      className="px-4 py-2.5 bg-white border border-purple-200 hover:border-purple-400 text-purple-950 text-xs font-semibold rounded-xl transition-all inline-flex items-center gap-2 whitespace-nowrap shrink-0 shadow-2xs active:scale-95 cursor-pointer"
                     >
-                      <Download className="w-3.5 h-3.5" />
+                      <Download className="w-3.5 h-3.5 text-purple-700" />
                       <span>Descargar Plantilla (.txt)</span>
                     </button>
                   </div>
@@ -438,12 +436,12 @@ export const ClassroomPlayer: React.FC<ClassroomPlayerProps> = ({
               )}
 
               {activeTab === 'evaluacion' && (
-                <div className="bg-white border border-slate-200 rounded-xl p-6 space-y-5">
+                <div className="bg-white border border-purple-100 rounded-3xl p-7 space-y-5 shadow-xs">
                   <div className="space-y-1">
-                    <p className="text-xs text-slate-500">
+                    <p className="text-xs font-semibold text-purple-700">
                       Comprobación práctica · Lección {activeLesson.number}
                     </p>
-                    <h3 className="text-base font-bold text-slate-900">
+                    <h3 className="text-base font-bold text-purple-950">
                       {activeLesson.quiz.question}
                     </h3>
                   </div>
@@ -460,15 +458,15 @@ export const ClassroomPlayer: React.FC<ClassroomPlayerProps> = ({
                             setSelectedQuizOption(idx);
                             setQuizSubmitted(false);
                           }}
-                          className={`w-full text-left p-3.5 rounded-lg border text-sm transition-colors flex items-center justify-between gap-3 cursor-pointer ${
+                          className={`w-full text-left p-4 rounded-2xl border text-sm transition-all flex items-center justify-between gap-3 cursor-pointer ${
                             isSelected
-                              ? 'border-slate-900 bg-slate-50 font-medium text-slate-900'
-                              : 'border-slate-200 hover:border-slate-300 text-slate-700'
+                              ? 'border-purple-600 bg-purple-50 font-semibold text-purple-950 shadow-xs'
+                              : 'border-purple-100 hover:border-purple-200 bg-white text-purple-900/80 hover:bg-purple-50/30'
                           }`}
                         >
                           <span>{opt}</span>
                           {quizSubmitted && isSelected && (
-                            <span className="text-xs font-semibold shrink-0">
+                            <span className="text-xs font-bold shrink-0">
                               {isCorrect ? '✓ Correcto' : '× Revisar'}
                             </span>
                           )}
@@ -490,7 +488,7 @@ export const ClassroomPlayer: React.FC<ClassroomPlayerProps> = ({
                           onToggleCompleteLesson(activeLesson.id);
                         }
                       }}
-                      className="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 disabled:bg-slate-300 text-white text-xs font-semibold rounded-lg transition-colors whitespace-nowrap shrink-0 cursor-pointer"
+                      className="px-6 py-3 bg-purple-700 hover:bg-purple-600 disabled:bg-purple-200 text-white text-xs font-semibold rounded-2xl transition-all whitespace-nowrap shrink-0 shadow-md shadow-purple-700/20 active:scale-95 cursor-pointer"
                     >
                       Verificar Respuesta
                     </button>
@@ -498,13 +496,13 @@ export const ClassroomPlayer: React.FC<ClassroomPlayerProps> = ({
 
                   {quizSubmitted && selectedQuizOption !== null && (
                     <div
-                      className={`p-4 rounded-lg border text-xs leading-relaxed ${
+                      className={`p-5 rounded-2xl border text-xs leading-relaxed ${
                         selectedQuizOption === activeLesson.quiz.correctIndex
-                          ? 'bg-emerald-50 border-emerald-200 text-emerald-900'
-                          : 'bg-amber-50 border-amber-200 text-amber-900'
+                          ? 'bg-purple-50 border-purple-200 text-purple-950'
+                          : 'bg-amber-50 border-amber-200 text-amber-950'
                       }`}
                     >
-                      <p className="font-semibold mb-1">
+                      <p className="font-bold mb-1">
                         {selectedQuizOption === activeLesson.quiz.correctIndex
                           ? '¡Respuesta correcta! Lección marcada como completada.'
                           : 'Explicación académica:'}
@@ -516,20 +514,19 @@ export const ClassroomPlayer: React.FC<ClassroomPlayerProps> = ({
               )}
 
               {activeTab === 'apuntes' && (
-                <div className="bg-white border border-slate-200 rounded-xl p-6 space-y-4">
+                <div className="bg-white border border-purple-100 rounded-3xl p-7 space-y-4 shadow-xs">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h3 className="text-base font-bold text-slate-900">
-                        Cuaderno de notas sincronizado en tu navegador
+                      <h3 className="text-base font-bold text-purple-950">
+                        Cuaderno de notas sincronizado
                       </h3>
-                      <p className="text-xs text-slate-500">
-                        Tus apuntes se conservan automáticamente para que continúes estudiando desde
-                        donde estés.
+                      <p className="text-xs text-purple-900/60">
+                        Tus notas se guardan automáticamente para continuar estudiando desde donde estés.
                       </p>
                     </div>
                     {notesSavedFeedback && (
-                      <span className="text-xs font-medium text-emerald-700">
-                        ✓ Apuntes guardados
+                      <span className="text-xs font-semibold text-purple-700">
+                        ✓ Guardado
                       </span>
                     )}
                   </div>
@@ -538,39 +535,39 @@ export const ClassroomPlayer: React.FC<ClassroomPlayerProps> = ({
                     rows={5}
                     value={studentNotes}
                     onChange={(e) => setStudentNotes(e.target.value)}
-                    className="w-full p-3.5 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-600"
-                    placeholder="Escribe aquí tus conclusiones, fórmulas o tareas de implementación..."
+                    className="w-full p-4 text-sm border border-purple-200/80 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-600 transition-all text-purple-950"
+                    placeholder="Escribe aquí tus conclusiones o fórmulas..."
                   />
 
                   <div className="flex justify-end">
                     <button
                       type="button"
                       onClick={handleSaveNotes}
-                      className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold rounded-lg transition-colors whitespace-nowrap shrink-0 cursor-pointer"
+                      className="px-5 py-2.5 bg-purple-900 hover:bg-purple-800 text-white text-xs font-semibold rounded-xl transition-all shadow-xs active:scale-95 cursor-pointer"
                     >
-                      Guardar Apuntes de la Lección
+                      Guardar Apuntes
                     </button>
                   </div>
                 </div>
               )}
 
               {activeTab === 'certificado' && (
-                <div className="bg-white border border-slate-200 rounded-xl p-6 sm:p-8 space-y-6">
-                  <div className="p-6 rounded-xl bg-[#FAF9F6] border border-slate-300 text-center space-y-4">
-                    <p className="text-xs font-mono-tabular text-amber-700 uppercase">
+                <div className="bg-white border border-purple-100 rounded-3xl p-7 space-y-6 shadow-xs">
+                  <div className="p-8 rounded-3xl bg-gradient-to-br from-white via-purple-50/40 to-purple-50/80 border border-purple-200 text-center space-y-4 shadow-2xs">
+                    <p className="text-xs font-mono-tabular text-purple-700 font-bold uppercase tracking-wider">
                       CREDIULEP · CERTIFICACIÓN ACADÉMICA VERIFICABLE
                     </p>
-                    <h3 className="text-2xl font-bold text-slate-900">{course.title}</h3>
-                    <p className="text-sm text-slate-600">
+                    <h3 className="text-2xl font-bold text-purple-950">{course.title}</h3>
+                    <p className="text-sm text-purple-900/70">
                       Se certifica que{' '}
-                      <strong className="text-slate-900">
+                      <strong className="text-purple-950">
                         {studentName || 'Estudiante Activo CREDIULEP'}
                       </strong>{' '}
                       cursa y aplica las competencias prácticas de{' '}
-                      <strong className="text-slate-900">{course.category}</strong> con una
+                      <strong className="text-purple-950">{course.category}</strong> con una
                       intensidad de {course.totalDuration}.
                     </p>
-                    <div className="pt-2 flex flex-wrap items-center justify-center gap-6 text-xs text-slate-500 font-mono-tabular">
+                    <div className="pt-2 flex flex-wrap items-center justify-center gap-6 text-xs text-purple-900/60 font-mono-tabular">
                       <span>ID: CERT-ULEP-{course.id.toUpperCase()}</span>
                       <span>·</span>
                       <span>Docente: {course.instructor.name}</span>
@@ -578,14 +575,14 @@ export const ClassroomPlayer: React.FC<ClassroomPlayerProps> = ({
                   </div>
 
                   <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-                    <p className="text-xs text-slate-600">
-                      Progreso actual: {completedInCourseCount} de {totalCourseLessons} lecciones
+                    <p className="text-xs text-purple-900/70">
+                      Progreso: {completedInCourseCount} de {totalCourseLessons} lecciones
                       completadas ({completionPercentage}%).
                     </p>
                     <button
                       type="button"
                       onClick={handleDownloadCertificate}
-                      className="px-5 py-2.5 bg-amber-600 hover:bg-amber-500 text-white text-xs font-semibold rounded-lg transition-colors inline-flex items-center gap-2 whitespace-nowrap shrink-0 cursor-pointer"
+                      className="px-6 py-3 bg-purple-700 hover:bg-purple-600 text-white text-xs font-semibold rounded-2xl shadow-md shadow-purple-700/20 transition-all inline-flex items-center gap-2 whitespace-nowrap shrink-0 active:scale-95 cursor-pointer"
                     >
                       <Download className="w-4 h-4" />
                       <span>Descargar Certificado Verificable (.txt)</span>
@@ -595,17 +592,17 @@ export const ClassroomPlayer: React.FC<ClassroomPlayerProps> = ({
               )}
             </>
           ) : (
-            /* Locked Lesson State */
-            <div className="bg-white border border-slate-200 rounded-xl p-8 sm:p-12 text-center space-y-5">
-              <div className="w-12 h-12 rounded-full bg-amber-50 border border-amber-200 text-amber-700 flex items-center justify-center mx-auto">
-                <Lock className="w-5 h-5" />
+            /* Locked Lesson State with Soft Rounded Rectangles */
+            <div className="bg-white border border-purple-100 rounded-3xl p-8 sm:p-14 text-center space-y-6 shadow-sm">
+              <div className="w-14 h-14 rounded-3xl bg-purple-50 border border-purple-100 text-purple-700 flex items-center justify-center mx-auto shadow-xs">
+                <Lock className="w-6 h-6" />
               </div>
               <div className="space-y-2 max-w-lg mx-auto">
-                <p className="text-xs font-mono-tabular text-slate-500">
+                <p className="text-xs font-mono-tabular font-bold text-purple-700">
                   LECCIÓN {activeLesson.number} · REQUIERE MATRÍCULA ACTIVA
                 </p>
-                <h2 className="text-2xl font-bold text-slate-900">{activeLesson.title}</h2>
-                <p className="text-sm text-slate-600 leading-relaxed">
+                <h2 className="text-2xl font-bold text-purple-950">{activeLesson.title}</h2>
+                <p className="text-sm text-purple-900/70 leading-relaxed">
                   Adquiere este curso desde donde estés y desbloquea todas las{' '}
                   {course.lessonsCount} lecciones al instante.
                 </p>
@@ -613,7 +610,7 @@ export const ClassroomPlayer: React.FC<ClassroomPlayerProps> = ({
               <div className="pt-2">
                 <button
                   onClick={() => onBuyCourseNow(course)}
-                  className="px-6 py-3 bg-amber-600 hover:bg-amber-500 text-white text-sm font-semibold rounded-lg transition-colors inline-flex items-center gap-2 whitespace-nowrap shrink-0 cursor-pointer"
+                  className="px-7 py-3.5 bg-purple-700 hover:bg-purple-600 text-white text-sm font-semibold rounded-2xl shadow-lg shadow-purple-700/25 transition-all inline-flex items-center gap-2 whitespace-nowrap shrink-0 active:scale-95 cursor-pointer"
                 >
                   <span>
                     Pagar Ahora ({formatPrice(course.priceCOP, course.priceUSD, currency)})
@@ -624,22 +621,22 @@ export const ClassroomPlayer: React.FC<ClassroomPlayerProps> = ({
           )}
         </div>
 
-        {/* Right 4 Columns: Course Syllabus & Lesson Selector */}
-        <aside className="lg:col-span-4 bg-white border border-slate-200 rounded-xl overflow-hidden">
-          <div className="p-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
-            <h2 className="text-sm font-bold text-slate-900">Plan de Estudios del Curso</h2>
-            <span className="text-xs font-mono-tabular text-slate-500">
+        {/* Right 4 Columns: Course Syllabus & Lesson Selector with Soft Rounded Corners */}
+        <aside className="lg:col-span-4 bg-white border border-purple-100 rounded-3xl overflow-hidden shadow-sm">
+          <div className="p-5 bg-purple-50/60 border-b border-purple-100 flex items-center justify-between">
+            <h2 className="text-sm font-bold text-purple-950">Plan de Estudios</h2>
+            <span className="text-xs font-mono-tabular font-bold text-purple-700">
               {course.lessonsCount} lecciones
             </span>
           </div>
 
-          <div className="divide-y divide-slate-200">
+          <div className="divide-y divide-purple-50">
             {course.modules.map((mod) => (
               <div key={mod.id}>
-                <div className="px-4 py-2.5 bg-slate-50/60 text-xs font-semibold text-slate-700">
+                <div className="px-5 py-3 bg-purple-50/30 text-xs font-bold text-purple-900/80">
                   {mod.title}
                 </div>
-                <div className="divide-y divide-slate-100">
+                <div className="divide-y divide-purple-50/60">
                   {mod.lessons.map((lesson) => {
                     const isSelected = lesson.id === activeLesson.id;
                     const isCompleted = completedLessons.includes(lesson.id);
@@ -650,13 +647,13 @@ export const ClassroomPlayer: React.FC<ClassroomPlayerProps> = ({
                         key={lesson.id}
                         type="button"
                         onClick={() => setActiveLessonId(lesson.id)}
-                        className={`w-full text-left p-4 transition-colors flex items-start justify-between gap-3 cursor-pointer ${
-                          isSelected ? 'bg-amber-50/70' : 'hover:bg-slate-50'
+                        className={`w-full text-left p-4 transition-all flex items-start justify-between gap-3 cursor-pointer ${
+                          isSelected ? 'bg-purple-50/90' : 'hover:bg-purple-50/40'
                         }`}
                       >
                         <div className="space-y-1">
-                          <div className="flex items-center gap-2 text-xs text-slate-500">
-                            <span className="font-mono-tabular font-semibold text-slate-700">
+                          <div className="flex items-center gap-2 text-xs text-purple-900/60">
+                            <span className="font-mono-tabular font-bold text-purple-700">
                               {lesson.number}
                             </span>
                             <span aria-hidden="true">·</span>
@@ -664,15 +661,15 @@ export const ClassroomPlayer: React.FC<ClassroomPlayerProps> = ({
                             {lesson.isFreePreview && !isPurchased && (
                               <>
                                 <span aria-hidden="true">·</span>
-                                <span className="text-amber-700 font-medium">Libre</span>
+                                <span className="text-purple-700 font-bold">Libre</span>
                               </>
                             )}
                           </div>
                           <p
                             className={`text-sm leading-snug ${
                               isSelected
-                                ? 'font-bold text-slate-900'
-                                : 'font-medium text-slate-800'
+                                ? 'font-bold text-purple-950'
+                                : 'font-semibold text-purple-900/80'
                             }`}
                           >
                             {lesson.title}
@@ -682,17 +679,17 @@ export const ClassroomPlayer: React.FC<ClassroomPlayerProps> = ({
                         <div className="shrink-0 mt-0.5">
                           {isCompleted ? (
                             <CheckCircle2
-                              className="w-4 h-4 text-emerald-600"
+                              className="w-4 h-4 text-purple-700"
                               aria-label="Lección completada"
                             />
                           ) : canAccess ? (
                             <Play
                               className={`w-4 h-4 ${
-                                isSelected ? 'text-amber-600' : 'text-slate-400'
+                                isSelected ? 'text-purple-700' : 'text-purple-300'
                               }`}
                             />
                           ) : (
-                            <Lock className="w-4 h-4 text-slate-400" />
+                            <Lock className="w-4 h-4 text-purple-300" />
                           )}
                         </div>
                       </button>

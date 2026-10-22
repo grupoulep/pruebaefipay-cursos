@@ -292,7 +292,7 @@ Día del mes para aporte DCA: Día ______.`,
     slug: 'ingenieria-web-fullstack-arquitectura-cloud',
     title: 'Ingeniería Web Full-Stack con TypeScript, React y Pasarelas de Pago',
     subtitle:
-      'Construye aplicaciones web en producción, APIs seguras, webhooks transaccionales con Efipay y despliegues en la nube.',
+      'Construye aplicaciones web en producción, APIs seguras, webhooks transaccionales y despliegues en la nube.',
     category: 'Tecnología y Datos',
     level: 'Avanzado',
     priceCOP: 189000,
