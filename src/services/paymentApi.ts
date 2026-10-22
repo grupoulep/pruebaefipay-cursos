@@ -10,10 +10,14 @@ export interface PaymentOrderPayload {
 }
 
 const DEFAULT_API_ENDPOINT =
-  import.meta.env.VITE_PAYMENT_API_URL || 'https://api.efipay.co/v1/payment/generate-payment';
+  (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_PAYMENT_API_URL)
+    ? import.meta.env.VITE_PAYMENT_API_URL
+    : 'https://api.efipay.co/v1/payment/generate-payment';
 
 const DEFAULT_CHECKOUT_REDIRECT =
-  import.meta.env.VITE_PAYMENT_CHECKOUT_URL || 'https://api.efipay.co/v1/payment/checkout';
+  (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_PAYMENT_CHECKOUT_URL)
+    ? import.meta.env.VITE_PAYMENT_CHECKOUT_URL
+    : 'https://api.efipay.co/v1/payment/checkout';
 
 /**
  * Envía la orden de compra directamente a la API de pagos y redirige al usuario
@@ -34,25 +38,33 @@ export async function redirectToPaymentGateway(
   const courseIds = courses.map((c) => c.id);
   const description = courses.map((c) => c.title).join(' | ');
 
-  const currentOrigin = window.location.origin + window.location.pathname;
+  const currentOrigin =
+    typeof window !== 'undefined'
+      ? window.location.origin + window.location.pathname
+      : '';
   const returnUrl = `${currentOrigin}?status=approved&ref=${encodeURIComponent(
     reference
   )}&courses=${encodeURIComponent(courseIds.join(','))}`;
 
   // Guardar cursos en proceso para desbloqueo inmediato al retornar del pago
-  try {
-    const existingPurchased = JSON.parse(localStorage.getItem('crediulep_purchased') || '[]');
-    const updatedPurchased = Array.from(new Set([...existingPurchased, ...courseIds]));
-    localStorage.setItem('crediulep_purchased', JSON.stringify(updatedPurchased));
-    localStorage.setItem('crediulep_pending_order', JSON.stringify({
-      reference,
-      amount: totalAmount,
-      currency,
-      courseIds,
-      timestamp: new Date().toISOString(),
-    }));
-  } catch {
-    // Ignore storage errors
+  if (typeof localStorage !== 'undefined') {
+    try {
+      const existingPurchased = JSON.parse(localStorage.getItem('crediulep_purchased') || '[]');
+      const updatedPurchased = Array.from(new Set([...existingPurchased, ...courseIds]));
+      localStorage.setItem('crediulep_purchased', JSON.stringify(updatedPurchased));
+      localStorage.setItem(
+        'crediulep_pending_order',
+        JSON.stringify({
+          reference,
+          amount: totalAmount,
+          currency,
+          courseIds,
+          timestamp: new Date().toISOString(),
+        })
+      );
+    } catch {
+      // Ignore storage errors
+    }
   }
 
   const requestBody = {
@@ -66,14 +78,17 @@ export async function redirectToPaymentGateway(
     },
     advanced_options: {
       redirect_url: returnUrl,
-      webhook_url: `${window.location.origin}/api/webhooks/payment`,
+      webhook_url: `${typeof window !== 'undefined' ? window.location.origin : ''}/api/webhooks/payment`,
       picture_url: '',
     },
     office: 1,
   };
 
   try {
-    const apiToken = import.meta.env.VITE_PAYMENT_API_TOKEN || '';
+    const apiToken =
+      typeof import.meta !== 'undefined' && import.meta.env
+        ? import.meta.env.VITE_PAYMENT_API_TOKEN || ''
+        : '';
     const response = await fetch(DEFAULT_API_ENDPOINT, {
       method: 'POST',
       headers: {
@@ -87,7 +102,7 @@ export async function redirectToPaymentGateway(
     if (response.ok) {
       const data = await response.json();
       const targetUrl = data?.url || data?.payment_url || data?.data?.url;
-      if (targetUrl) {
+      if (targetUrl && typeof window !== 'undefined') {
         window.location.href = targetUrl;
         return;
       }
@@ -105,5 +120,7 @@ export async function redirectToPaymentGateway(
     redirect_url: returnUrl,
   });
 
-  window.location.href = `${DEFAULT_CHECKOUT_REDIRECT}?${queryParams.toString()}`;
+  if (typeof window !== 'undefined') {
+    window.location.href = `${DEFAULT_CHECKOUT_REDIRECT}?${queryParams.toString()}`;
+  }
 }

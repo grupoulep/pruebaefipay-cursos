@@ -34,8 +34,11 @@ jobs:
       - name: Compilar aplicación para producción (dist)
         run: npm run build
 
-      - name: Copiar index.html a 404.html para rutas SPA en GitHub Pages
-        run: cp dist/index.html dist/404.html
+      - name: Copiar index.html a 404.html y CNAME para rutas SPA y dominio personalizado
+        run: |
+          cp dist/index.html dist/404.html
+          if [ -f "CNAME" ]; then cp CNAME dist/CNAME; fi
+          if [ -f "public/CNAME" ]; then cp public/CNAME dist/CNAME; fi
 
       - name: Configurar GitHub Pages
         uses: actions/configure-pages@v5

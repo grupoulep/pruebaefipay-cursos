@@ -2,5 +2,7 @@
   "name": "CREDIULEP — Tienda Virtual de Cursos",
   "description": "Plataforma educativa CREDIULEP para comprar cursos desde donde estés con catálogo categorizado y acceso inmediato a las lecciones.",
   "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
 }
